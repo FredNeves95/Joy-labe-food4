@@ -1,14 +1,12 @@
-import axios from "axios";
 import React, { useContext, useEffect, useState } from "react"
 import { CardRestaurant } from '../../components/CardRestaurant';
-import { Base_url } from "../../constants/Urls";
-import { goToResult } from "../../routes/coordinator";
-import GlobalContext from '../../global/GlobalContext';
+import GlobalStateContext from '../../global/GlobalContext';
 import { useHistory } from "react-router-dom";
 import Navigation from "../../components/Navigation";
 import { Header } from "../../components/Header";
-import { Tab } from "./styled";
-import { Tabs } from "./styled";
+import { Tab } from "./styledMaterialUI";
+import { Tabs } from "./styledMaterialUI";
+import { CardContainer } from './styled'
 import SearchIcon from '@mui/icons-material/Search';
 import { InputAdornment, Box, TextField, Typography, Grid } from '@mui/material';
 import useProtectedPage from "../../hooks/useProtectedPage";
@@ -17,27 +15,23 @@ import Clock from '../../images/clock.png';
 
 const FeedPage = () => {
   useProtectedPage()
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = useState(0);
   const [restaurantsFiltered, setRestaurantsFiltered] = useState([])
   const [text, setText] = useState('')
   const [activeOrder, setActiveOrder] = useState(false)
-  const [order, setOrder] = useState([])
 
-  const { states, setters } = useContext(GlobalContext)
+  const { states, setters } = useContext(GlobalStateContext)
   const { rest } = states
   const { setRest } = setters
   const history = useHistory()
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-  useEffect(() => {
-    getRest()
-    getActiveOrder()
-  }, [restaurantsFiltered])
-  console.log(rest)
+
   const getRest = () => {
-    axios
-      .get(`${Base_url}/restaurants`,
+    api
+      .get(`/restaurants`,
         {
           headers: {
             auth: localStorage.getItem('token')
@@ -54,59 +48,77 @@ const FeedPage = () => {
   const getActiveOrder = async () => {
     const response = await api.get('/active-order')
     try {
-      setOrder(response.data.order)
-      setActiveOrder(response.data?.order?.restaurantName?.length > 0 ? true : false)
+      console.log(response.data);
+      setActiveOrder(response.data.order)
     } catch (error) {
       alert(error.message)
     }
   }
 
+  // console.log(activeOrder);
+
+  useEffect(() => {
+    getRest()
+    getActiveOrder()
+  }, [])
+
   const filterRestt = (typ) => {
     const filterR = rest.filter((restaurant) => {
       return restaurant.category === typ
     })
-    setRest(filterR)
+    setRestaurantsFiltered(filterR)
   }
+
   const searchRestaurants = (e) => {
-    e.preventDefault();
+    setValue(0)
     const search = e.target.value;
-    const searchRestaurants = rest.filter(restaurant => {
+
+    const searchRestaurants = rest.filter((restaurant) => {
       return restaurant.name.toLowerCase().includes(search.toLowerCase())
     })
+
     if (search.length > 0 && searchRestaurants.length === 0) {
       setText('Não encontramos :(')
+      setRestaurantsFiltered([])
     }
     if (search.length === 0) {
       setRestaurantsFiltered([])
+      setText('')
     } else {
       setRestaurantsFiltered(searchRestaurants)
     }
   }
+
   const renderL = () => {
     if (restaurantsFiltered.length === 0) {
       return (
-        <Typography fontWeigth="600" style={{ alignSelf: 'center' }}>
+        <CardContainer>
           {text}
-          {mapRest}
-        </Typography>
+          {
+            text === 'Não encontramos :(' ? <></> :
+              rest.map((restaurants) => {
+                return (
+                  <CardRestaurant key={restaurants.id} logo={restaurants.logoUrl} name={restaurants.name} time={restaurants.deliveryTime} shipping={restaurants.shipping} history={history} id={restaurants.id} />
+                )
+              })}
+        </CardContainer>
       )
     } else {
       return (
-        <Grid justifyContent="center" alignItems="center" style={{ display: 'flex', flexDirection: 'column' }}>
-          <CardRestaurant logo={restaurantsFiltered[0].logoUrl} name={restaurantsFiltered[0].name} time={restaurantsFiltered[0].deliveryTime} shipping={restaurantsFiltered[0].shipping} />
-        </Grid>
+        <CardContainer>
+          {
+            restaurantsFiltered.map((item) => {
+              return (
+                <CardRestaurant key={item.id} logo={item.logoUrl} name={item.name} time={item.deliveryTime} shipping={item.shipping} history={history} id={item.id} />
+              )
+            })}
+        </CardContainer>
       )
     }
   }
-  const mapRest = rest.map((restaurants) => {
-    return (
-      <Grid justifyContent="center" alignItems="center" onClick={() => goToResult(history, restaurants.id)} style={{ display: 'flex', flexDirection: 'column' }}>
-        <CardRestaurant key={restaurants.id} logo={restaurants.logoUrl} name={restaurants.name} time={restaurants.deliveryTime} shipping={restaurants.shipping} />
-      </Grid>
-    )
-  })
 
-  console.log(value)
+
+
   return (
     <div>
       <div>
@@ -141,7 +153,6 @@ const FeedPage = () => {
               value={value}
               onChange={handleChange}
               variant="scrollable"
-              scrollButtons={false}
               aria-label="scrollable prevent tabs example"
             >
               <Tab label="Árabe" value="Árabe" onClick={() => filterRestt("Árabe")} >Árabe</Tab>
@@ -158,10 +169,10 @@ const FeedPage = () => {
         </div>
         <div>
           <div>
-            {restaurantsFiltered ? renderL() : mapRest}
+            {renderL()}
           </div>
           <div>
-            {activeOrder && (
+            {activeOrder ? (
               <Grid style={{ display: 'flex', padding: '1rem', height: '118px', width: '100%', background: '#e86e5a', alignItems: 'center', zIndex: '9999', position: 'fixed', bottom: '55px', left: 0, right: 0 }}>
                 <Grid>
                   <img src={Clock} alt="relógio" />
@@ -173,16 +184,16 @@ const FeedPage = () => {
                   </Typography>
 
                   <Typography fontSize="16px" style={{}}>
-                    {order.restaurantName}
+                    {activeOrder.restaurantName}
                   </Typography>
 
                   <Typography fontSize="16px" style={{}}>
-                    SUBTOTAL R$ {order.totalPrice}
+                    SUBTOTAL R$ {activeOrder.totalPrice}
                   </Typography>
 
                 </Grid>
               </Grid>
-            )}
+            ) : <></>}
 
           </div>
         </div>

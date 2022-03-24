@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 
-import { Button, Divider, Grid, Radio, RadioGroup, Typography } from '@mui/material'
+import { Button, Divider, Grid, Radio, Typography } from '@mui/material'
 import { Header } from '../../components/Header'
 import Navigation from '../../components/Navigation'
 import { CardProduct } from "../../components/CardProduct"
-
+import GlobalStateContext from '../../global/GlobalContext';
 import useProtectedPage from '../../hooks/useProtectedPage'
-import { useGlobalStates } from '../../global/GlobalState'
 import { api } from '../../api'
 
 const CartPage = () => {
@@ -17,7 +16,58 @@ const CartPage = () => {
   const [creditCard, setCreditCard] = useState(false)
   const [paymentMethod, setPaymentMethod] = useState('money')
   const [activeOrder, setActiveOrder] = useState(false)
-  const { carrinho } = useGlobalStates()
+  const [shippingValue, setShippingValue] = useState(0)
+  const [subTotal, setSubTotal] = useState(0)
+  const { states } = useContext(GlobalStateContext)
+  const cartProducts = states.cartProducts
+
+  // This function receives the products from cartProducts and returns the shipping value.
+  // If there are more then one item from one restaurant, it will sum only once the value.
+  // For example, to buy two different burgers from McDonalds you must pay the same shipping 
+  // value that you should pay if you have bought only one.
+
+  const sumShippingValue = () => {
+    let value = 0;
+    if (cartProducts) {
+      for (let i = 0; i < cartProducts.length; i++) {
+        if (cartProducts[i + 1] && cartProducts[i].restaurantId === cartProducts[i + 1].restaurantId) {
+          value = value + cartProducts[i + 1].shipping
+          i++
+        } else {
+          value = value + cartProducts[i].shipping
+        }
+      }
+      setShippingValue(value)
+    } else {
+      setShippingValue(0)
+    }
+
+  }
+
+  // This function receives the products from cartProducts and returns the sub total value.
+  // It will sum the shipping value with the product price multiplied by the quantity.
+
+  const sumSubTotal = () => {
+    if (cartProducts) {
+      let productsPrice = cartProducts.reduce((acc, item) => acc + (item.price * item.quantity), 0)
+      let total = productsPrice + shippingValue
+      setSubTotal(total)
+    }
+    else {
+      setSubTotal(0)
+    }
+  }
+
+  useEffect(() => {
+    sumShippingValue()
+  }, [cartProducts])
+
+  useEffect(() => {
+    sumSubTotal()
+  }, [shippingValue, cartProducts])
+
+
+
 
   const handlePaymentMethod = (e) => {
     if (e === 'creditcard') {
@@ -34,17 +84,17 @@ const CartPage = () => {
   const handlePlaceOrder = async () => {
     window.event.preventDefault()
 
-    const products = carrinho.map((product) => {
+    const products = cartProducts.map((product) => {
       return { id: product.id, quantity: product.quantity }
     })
 
     try {
-      await api.post(`/restaurants/${carrinho[0].restaurantId}/order`, {
+      await api.post(`/restaurants/${cartProducts[0].restaurantId}/order`, {
         paymentMethod,
         products: products,
       })
       alert('Pedido realizado com sucesso!')
-      carrinho.forEach(product => {
+      cartProducts.forEach(product => {
         product.quantity = 0
       })
       window.location.href = '/restaurantes'
@@ -78,7 +128,7 @@ const CartPage = () => {
       alert('Você tem pedidos em andamento')
       return
     }
-  }, [carrinho]);
+  }, [activeOrder]);
 
   return (
     <Grid style={{ display: 'flex', flexDirection: 'column', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
@@ -93,18 +143,18 @@ const CartPage = () => {
         </Typography>
       </Grid>
 
-      {carrinho.length > 0 ? (
+      {cartProducts.length > 0 ? (
         <>
-          <Grid direction="column" style={{ width: '100%', marginTop: '8px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
-            {carrinho.map((item, index) => (
-              <CardProduct key={index} image={item.image} name={item.name} price={item.price} description={item.description} isProductCart />
+          <Grid style={{ width: '100%', marginTop: '8px', display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}>
+            {cartProducts.map((item, index) => (
+              <CardProduct key={index} idProduct={item.id} image={item.image} name={item.name} price={item.price} description={item.description} quant={item.quantity} />
             ))}
           </Grid>
 
           <Grid style={{ width: '100%', padding: '1rem' }}>
 
             <Typography style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              Frete R$ {carrinho[0]?.shipping}
+              Frete R$ {shippingValue.toFixed(2)}
             </Typography>
 
             <Grid style={{ display: 'flex', justifyContent: 'space-between', marginTop: '8px' }}>
@@ -112,7 +162,7 @@ const CartPage = () => {
                 SUBTOTAL
               </Typography>
               <Typography style={{ color: '#e86e5a' }}>
-                R$ {carrinho.reduce((acc, item) => acc + item.price, 0)}
+                R$ {subTotal.toFixed(2)}
               </Typography>
             </Grid>
 

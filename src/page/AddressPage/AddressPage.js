@@ -18,7 +18,7 @@ import useProtectedPage from '../../hooks/useProtectedPage';
 
 const AdressPage = () => {
   useProtectedPage()
-  const [values, setValues] = React.useState({
+  const [values, setValues] = useState({
     street: '',
     number: '',
     neighbourhood: '',

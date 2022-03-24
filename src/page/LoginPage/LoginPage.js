@@ -8,7 +8,7 @@ import { InputAdornment } from '@mui/material';
 import { IconButton } from '@mui/material';
 import { Visibility } from '@mui/icons-material';
 import { VisibilityOff } from '@mui/icons-material';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useHistory } from "react-router-dom";
 import { goToFeed, goToSingUp, goToAdress } from "../../routes/coordinator"
 
@@ -22,8 +22,6 @@ const LoginPage = () => {
         showPassword: false,
     });
 
-    const [token, setToken] = useState(localStorage.getItem("token"))
-
     const body = {
         email: values.email,
         password: values.password
@@ -36,19 +34,13 @@ const LoginPage = () => {
                     "Content-Type": "application/json"
                 }
             })
-            console.log(response)
-            setToken(response.data.token)
             localStorage.setItem("token", response.data.token)
+
             if (response.data.user.hasAddress === true) {
                 goToFeed(history)
             } else {
                 goToAdress(history)
             }
-            setValues({
-                email: "",
-                password: "",
-                showPassword: false,
-            })
         } catch (error) {
             console.log(error)
         }

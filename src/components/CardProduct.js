@@ -1,14 +1,16 @@
-import React, { useState } from "react"
-
+import React, { useState, useContext, useEffect } from "react"
+import GlobalStateContext from '../global/GlobalContext';
 import { Button, Grid, Typography, Modal, Select, MenuItem } from "@mui/material";
-import { useGlobalSetters } from "../global/GlobalState";
-import { useGlobalStates } from "../global/GlobalState";
+import { QuantityDisplay } from './QuantityDisplay'
 
-export const CardProduct = ({ name, image, price, description, idProduct, restaurantId, isProductCart, shipping }) => {
+export const CardProduct = ({ name, image, price, description, idProduct, restaurantId, shipping, quant }) => {
   const [open, setOpen] = useState(false);
-  const [quantity, setQuantity] = useState(1);
-  const { setCarrinho } = useGlobalSetters();
-  const { carrinho } = useGlobalStates()
+  const [quantity, setQuantity] = useState(quant);
+  const [activeQuantity, setActiveQuantity] = useState(0);
+  const [selected, setSelected] = useState(false)
+  const { states, setters } = useContext(GlobalStateContext)
+  const { cartProducts } = states
+  const { setCartProducts } = setters
 
   const product = {
     id: idProduct,
@@ -21,30 +23,59 @@ export const CardProduct = ({ name, image, price, description, idProduct, restau
     shipping: shipping,
   }
 
-  const removeItemToCart = () => {
-    const newCarrinho = carrinho.filter(product => product.id !== idProduct)
-    setCarrinho(newCarrinho)
+  useEffect(() => {
+    setSelected(
+      cartProducts.map((item) => {
+        return item.id
+      }).includes(product.id)
+    )
+  }, [cartProducts])
+
+
+  // This function is responsible for get the quantity of the items that were already added to the cart
+
+  useEffect(() => {
+    const activeProduct = cartProducts.filter((item) => {
+      if (item.id === product.id) {
+        setActiveQuantity(item.quantity);
+      } else {
+        return false
+      }
+    })
+  }, [cartProducts])
+
+  const removeItemFromCart = () => {
+    const newCartProducts = cartProducts.filter(product => product.id !== idProduct)
+    setCartProducts(newCartProducts)
+    setQuantity(0)
   }
 
-  const handleQuantity = (quantityProduct) => {
-    setQuantity(quantityProduct);
+  const handleQuantity = (e) => {
+    setQuantity(e.target.value);
   }
 
   const handleOpenModal = () => {
     setOpen(true);
   };
 
-  const addToCart = async () => {
-    const copyCart = [...carrinho];
-    await setCarrinho([...copyCart, product]);
+  const addToCart = () => {
+    setCartProducts([...cartProducts, product]);
     setOpen(false);
   }
 
   return (
-    <Grid style={{ display: 'flex', width: '328px', height: '125px', border: '1px solid #b8b8b8', borderRadius: '8px', marginTop: '8px' }}>
+    <Grid style={{ display: 'flex', alignItems: 'center', width: '328px', height: '125px', border: '1px solid #b8b8b8', borderRadius: '8px', marginTop: '8px', position: 'relative' }}>
       <Grid>
-        <img src={image} alt={name} style={{ width: '97px', height: '125px', borderRadius: '8px 0 0 8px' }} />
+        <img src={image} alt={name} style={{ width: '97px', borderRadius: '8px 0 0 8px' }} />
       </Grid>
+
+      {
+        selected ?
+          activeQuantity ?
+            <QuantityDisplay>{activeQuantity}</QuantityDisplay> :
+            <QuantityDisplay>{quantity}</QuantityDisplay> :
+          <></>
+      }
 
       <Grid style={{ marginLeft: '16px', marginTop: '10px', minWidth: '200px' }}>
         <Typography fontSize="16px" style={{ color: '#e86e5a' }}>
@@ -62,24 +93,24 @@ export const CardProduct = ({ name, image, price, description, idProduct, restau
         </Grid>
       </Grid>
 
-      {isProductCart ? (
-        <Button style={{ marginLeft: '-96px', marginTop: 'auto', minWidth: '110px', border: '1px solid', borderRadius: '8px 0 8px 0', fontSize: '12px', color: '#e86e5a' }} onClick={removeItemToCart}>
+      {selected ? (
+        <Button style={{ position: 'absolute', bottom: '0', right: '0', minWidth: '110px', border: '1px solid', borderRadius: '8px 0 8px 0', fontSize: '12px', color: '#e86e5a' }} onClick={removeItemFromCart} >
           Remover
         </Button>
       ) :
-      (
-        <Button style={{ marginLeft: '-96px', marginTop: 'auto', minWidth: '110px', border: '1px solid', borderRadius: '8px 0 8px 0', fontSize: '12px', color: 'black' }} onClick={handleOpenModal}>
-          Adicionar
-        </Button>
-      )}
+        (
+          <Button style={{ position: 'absolute', bottom: '0', right: '0', minWidth: '110px', border: '1px solid', borderRadius: '8px 0 8px 0', fontSize: '12px', color: 'black' }} onClick={handleOpenModal}>
+            Adicionar
+          </Button>
+        )}
 
       <Modal open={open} onClose={() => setOpen(false)} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
         <Grid style={{ display: 'flex', flexDirection: 'column', width: '328px', height: '216px', justifyContent: 'center', alignItems: 'center', background: '#fff', padding: '2rem' }}>
           <Typography>
-            Selecione a quatidade desejada
+            Selecione a quantidade desejada
           </Typography>
 
-          <Select fullWidth style={{ marginTop: '1rem' }} onChange={(e) => handleQuantity(e.target.value)} >
+          <Select fullWidth style={{ marginTop: '1rem' }} value={quantity} onChange={handleQuantity} >
             <MenuItem value={1}>1</MenuItem>
             <MenuItem value={2}>2</MenuItem>
             <MenuItem value={3}>3</MenuItem>

@@ -1,41 +1,8 @@
-import { styled } from '@mui/system';
-import { buttonUnstyledClasses } from '@mui/base/ButtonUnstyled';
-import TabUnstyled, { tabUnstyledClasses } from '@mui/base/TabUnstyled';
-import TabsUnstyled from '@mui/base/TabsUnstyled';
+import styled from 'styled-components'
 
-
-export const Tabs = styled(TabsUnstyled)`
-display: flex;
-overflow-x: auto;
-`
-
-export const Tab = styled(TabUnstyled)`
-  font-family: IBM Plex Sans, sans-serif;
-  color: black;
-  cursor: pointer;
-  font-size: 0.875rem;
-  font-weight: bold;
-  background-color: transparent;
-  padding: 6px 8px;
-  margin: 6px 6px;
-  border: none;
-  border-radius: 5px;
-  display: flex;
-  justify-content: center;
-
-  &:focus {
-    color: #fff;
-    border-radius: 3px;
-    outline: 2px solid #E86E5A;
-    outline-offset: 2px;
-  }
-  &.${tabUnstyledClasses.selected} {
-    /* background-color: blue; */
-    color: #E86E5A;
-  }
-
-  &.${buttonUnstyledClasses.disabled} {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
+export const CardContainer = styled.div`
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 `

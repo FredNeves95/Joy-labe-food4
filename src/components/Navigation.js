@@ -11,14 +11,13 @@ import { goToFeed } from "../routes/coordinator";
 import { goToCar } from "../routes/coordinator";
 import { goToProfile } from "../routes/coordinator";
 import { Box } from '@mui/material';
-import { useState } from "react";
 import { orange } from '@mui/material/colors';
 
 
 const Navigation = () => {
-    const [value, setValue] = useState(localStorage.getItem("value"))
+    let value = localStorage.getItem("value")
     const history = useHistory()
-    console.log(value);
+
     return (
         <div>
             <Box sx={{ pb: 7 }}>

@@ -19,9 +19,6 @@ export const goToProfile = (history) => {
 export const goToEdit = (history) => {
     history.push("/edicao-cadastro")
 }
-export const goToSearch = (history) => {
-    history.push("/busca")
-}
 export const goToSingUp = (history) => {
     history.push("/cadastro")
 }

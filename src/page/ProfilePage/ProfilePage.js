@@ -2,20 +2,12 @@ import React from "react"
 import useProtectedPage from "../../hooks/useProtectedPage"
 import { Header } from '../../components/Header'
 import Navigation from '../../components/Navigation'
-// import { ProfileStyle } from './styled';
-// import { goToEdit } from "../../routes/coordinator";
+import { goToEdit } from "../../routes/coordinator";
 import { useHistory } from "react-router-dom";
-// import Edit from '../../images/edit.png'
 import axios from "axios";
 import { Base_url } from "../../constants/Urls";
 import { useState, useEffect } from 'react';
-// import {
-//   Container,
-//   InfoContainer,
-//   StyledLink,
-//   AddressContainer
 
-// } from './styled';
 
 
 const ProfilePage = () => {
@@ -68,22 +60,10 @@ const ProfilePage = () => {
 
   return (
     <div>
-      {/* {<Container> /} */}
 
-        <Header text="Meu Perfil" />
-
-        {/* {/ <PersonalInfoContainer> /} */}
-        <p>{user.name}</p>
-        <p>{user.email}</p>
-        <p>{user.cpf}</p>
-
-        {/* {/ <StyledLink to="/edicao - cadastro"> */}
-        {/* <Edit fontSize="24px" /> */}
-      {/* // </StyledLink> /} */}
-
-      {/* {/ </InfoContainer > /} */}
-    {/* // {/</Container >} */}
-
+      <p>{user.name}</p>
+      <p>{user.email}</p>
+      <p>{user.cpf}</p>
       <Navigation />
     </div>
 

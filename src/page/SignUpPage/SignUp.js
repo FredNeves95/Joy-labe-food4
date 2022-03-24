@@ -30,7 +30,6 @@ const SignUp = () => {
         showPassword: false,
         showConfirmPassword: false,
     });
-    const token = localStorage.getItem("token")
 
     const body = {
         name: values.name,

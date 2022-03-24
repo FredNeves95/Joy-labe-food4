@@ -22,7 +22,7 @@ const ResultPage = () => {
   const getRestaurantInfo = async () => {
     setIsLoading(true);
     try {
-      const response = await api.get(`/restaurants/${restaurantId}`,{
+      const response = await api.get(`/restaurants/${restaurantId}`, {
         headers: {
           auth: token,
         },
@@ -53,26 +53,26 @@ const ResultPage = () => {
               <img src={Loading} alt="Loading" />
             </Grid>
           ) :
-          (
-            <>
-              <CardRestaurantDetail image={restaurant.logoUrl} name={restaurant.name} category={restaurant.category} deliveryTime={restaurant.deliveryTime} shippingValue={restaurant.shipping} address={restaurant.address} />
+            (
+              <>
+                <CardRestaurantDetail image={restaurant.logoUrl} name={restaurant.name} category={restaurant.category} deliveryTime={restaurant.deliveryTime} shippingValue={restaurant.shipping} address={restaurant.address} />
 
-              <Grid style={{ width: '360px', marginTop: '1rem' }}>
-                <Typography>
-                  Produtos
-                </Typography>
-                <Divider />
-              </Grid>
+                <Grid style={{ width: '360px', marginTop: '1rem' }}>
+                  <Typography>
+                    Produtos
+                  </Typography>
+                  <Divider />
+                </Grid>
 
-              <Grid>
-                {restaurant?.products?.map((product) => (
-                  <Grid style={{ marginTop: '1rem' }}>
-                    <CardProduct key={product.id} idProduct={product.id} name={product.name} image={product.photoUrl} price={product.price} description={product.description} restaurantId={restaurantId} shipping={restaurant.shipping} />
-                  </Grid>
-                ))}
-              </Grid>
-            </>
-          )}
+                <Grid>
+                  {restaurant?.products?.map((product) => (
+                    <Grid style={{ marginTop: '1rem' }} key={product.id}>
+                      <CardProduct idProduct={product.id} name={product.name} image={product.photoUrl} price={product.price} description={product.description} restaurantId={restaurantId} shipping={restaurant.shipping} />
+                    </Grid>
+                  ))}
+                </Grid>
+              </>
+            )}
 
         </Grid>
 

@@ -1,12 +1,11 @@
 import React from "react";
 import { BrowserRouter, Switch, Route } from "react-router-dom";
-import AdressPage from "../page/AdressPage/AdressPage";
+import AddressPage from "../page/AddressPage/AddressPage";
 import CartPage from "../page/CartPage/CartPage";
 import EditRecordPage from "../page/EditRecordPage/EditRecordPage";
 import FeedPage from "../page/FeedPage/FeedPage";
 import LoginPage from "../page/LoginPage/LoginPage";
 import ResultPage from "../page/ResultPage/ResultPage";
-import SearchPage from "../page/SearchPage/SearchPage";
 import SignUpPage from "../page/SignUpPage/SignUp";
 import ProfilePage from "../page/ProfilePage/ProfilePage";
 import ErrorPage from "../page/ErrorPage/ErrorPage";
@@ -30,7 +29,7 @@ const Router = () => {
                     <ResultPage />
                 </Route>
                 <Route exact path="/cadastro-endereco">
-                    <AdressPage />
+                    <AddressPage />
                 </Route>
                 <Route exact path="/carrinho">
                     <CartPage />
@@ -40,9 +39,6 @@ const Router = () => {
                 </Route>
                 <Route exact path="/edicao-cadastro">
                     <EditRecordPage />
-                </Route>
-                <Route exact path="/busca">
-                    <SearchPage />
                 </Route>
                 <Route exact path="/cadastro">
                     <SignUpPage />

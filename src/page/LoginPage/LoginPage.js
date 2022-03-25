@@ -10,7 +10,7 @@ import { Visibility } from '@mui/icons-material';
 import { VisibilityOff } from '@mui/icons-material';
 import { useState } from 'react';
 import { useHistory } from "react-router-dom";
-import { goToFeed, goToSingUp, goToAdress } from "../../routes/coordinator"
+import { goToFeed, goToSingUp, goToAddress } from "../../routes/coordinator"
 
 
 const LoginPage = () => {
@@ -39,10 +39,11 @@ const LoginPage = () => {
             if (response.data.user.hasAddress === true) {
                 goToFeed(history)
             } else {
-                goToAdress(history)
+                goToAddress(history)
             }
         } catch (error) {
-            console.log(error)
+            alert("Usuário ou senha incorretos")
+            console.log(error.message)
         }
     }
 

@@ -7,7 +7,7 @@ export const goToFeed = (history) => {
 export const goToResult = (history, id) => {
     history.push(`/restaurantes/${id}`)
 }
-export const goToAdress = (history) => {
+export const goToAddress = (history) => {
     history.push("/cadastro-endereco")
 }
 export const goToCar = (history) => {

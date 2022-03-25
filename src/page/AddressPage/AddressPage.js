@@ -42,10 +42,11 @@ const AdressPage = () => {
       })
         .then((res) => {
           localStorage.setItem("token", res.data.token)
+          alert('Endereço cadastrado com sucesso!')
           goToFeed(history)
         })
         .catch((err) => {
-          console.log(err);
+          console.log(err.message);
         })
     } else {
       alert("Preencha todos os campos com *")
@@ -59,7 +60,7 @@ const AdressPage = () => {
   return (
     <SignUpStyle>
       <Header>
-        <ArrowBackIosIcon className='icon' />
+        <ArrowBackIosIcon className='icon' onClick={() => history.goBack()} />
       </Header>
 
       <h4>Meu endereço</h4>

@@ -48,14 +48,12 @@ const FeedPage = () => {
   const getActiveOrder = async () => {
     const response = await api.get('/active-order')
     try {
-      console.log(response.data);
       setActiveOrder(response.data.order)
     } catch (error) {
       alert(error.message)
     }
   }
 
-  // console.log(activeOrder);
 
   useEffect(() => {
     getRest()

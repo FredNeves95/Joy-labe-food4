@@ -15,7 +15,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { SignUpStyle } from './styled';
 import { Header } from './styled';
 
-import { goToAdress, goToLogin } from '../../routes/coordinator';
+import { goToAddress, goToLogin } from '../../routes/coordinator';
 import { useHistory } from 'react-router-dom';
 
 const SignUp = () => {
@@ -74,7 +74,7 @@ const SignUp = () => {
                         console.log(response)
                         localStorage.setItem("token", response.data.token)
                         alert("Usuário cadastrado com sucesso.")
-                        goToAdress(history)
+                        goToAddress(history)
                         setValues({
                             name: "",
                             email: "",

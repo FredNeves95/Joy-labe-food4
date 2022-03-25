@@ -21,6 +21,8 @@ import { useHistory } from 'react-router-dom';
 const SignUp = () => {
     const history = useHistory()
 
+    const [isLoading, setIsLoading] = useState(false)
+
     const [values, setValues] = useState({
         name: "",
         email: "",
@@ -61,6 +63,7 @@ const SignUp = () => {
     };
 
     const signUp = async () => {
+        setIsLoading(true)
         if (values.name.length !== 0 && values.email.length !== 0 && values.cpf.length !== 0 && values.password.length !== 0 && values.confirmPassword.length !== 0) {
             if (values.password.length >= 6) {
                 if (values.password === values.confirmPassword) {
@@ -221,7 +224,12 @@ const SignUp = () => {
                 helperText={values.confirmPassword !== values.password ? "Deve ser a mesma que a anterior." : ""}
                 margin='normal'
             />
-            <button id="button--criar" onClick={signUp}>Criar</button>
+            {
+                isLoading ?
+
+                    <button id="button--criar">Carregando...</button> :
+                    <button id="button--criar" onClick={signUp}>Criar</button>
+            }
         </SignUpStyle>
     )
 }

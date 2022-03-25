@@ -106,7 +106,7 @@ const CartPage = () => {
   const getActiveOrder = async () => {
     const response = await api.get('/active-order')
     try {
-      setActiveOrder(response.data?.order?.length > 0 ? true : false)
+      setActiveOrder(response.data.order?.length > 0 ? true : false)
     } catch (error) {
       alert(error.message)
     }
@@ -124,10 +124,6 @@ const CartPage = () => {
   useEffect(() => {
     getActiveOrder()
     getProfile()
-    if (activeOrder) {
-      alert('Você tem pedidos em andamento')
-      return
-    }
   }, [activeOrder]);
 
   return (

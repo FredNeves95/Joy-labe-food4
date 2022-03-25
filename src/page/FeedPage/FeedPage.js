@@ -186,7 +186,7 @@ const FeedPage = () => {
                   </Typography>
 
                   <Typography fontSize="16px" style={{}}>
-                    SUBTOTAL R$ {activeOrder.totalPrice}
+                    SUBTOTAL R$ {activeOrder.totalPrice.toFixed(2)}
                   </Typography>
 
                 </Grid>
